@@ -10,6 +10,8 @@ import {
   SIGNUP_FAIL,
   ACTIVATION_SUCCESS,
   ACTIVATION_FAIL,
+  GOOGLE_AUTH_SUCCESS,
+  GOOGLE_AUTH_FAIL,
 } from "../actions/types";
 
 const initialState = {
@@ -19,7 +21,7 @@ const initialState = {
   user: null,
 };
 
-export default function auth (state = initialState, action) {
+export default function auth(state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
@@ -41,11 +43,11 @@ export default function auth (state = initialState, action) {
         ...state,
         user: payload,
       };
-      case SIGNUP_SUCCESS:
-        return {
-            ...state,
-            isAuthenticated: false
-        }
+    case SIGNUP_SUCCESS:
+      return {
+        ...state,
+        isAuthenticated: false,
+      };
     case AUTHENTICATED_FAIL:
       return {
         ...state,
@@ -56,6 +58,16 @@ export default function auth (state = initialState, action) {
         ...state,
         user: null,
       };
+    case GOOGLE_AUTH_SUCCESS:
+      localStorage.setItem("access", payload.access);
+      return {
+        ...state,
+        isAuthenticated: true,
+        access: payload.access,
+        refresh: payload.refresh,
+      };
+
+    case GOOGLE_AUTH_FAIL:
     case SIGNUP_FAIL:
     case LOGIN_FAIL:
     case LOGOUT:

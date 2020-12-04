@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
 import { connect } from "react-redux";
 import { logout } from "../../actions/auth";
+import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,6 +28,13 @@ const useStyles = makeStyles((theme) => ({
 
 const ButtonAppBar = ({ isAuthenticated, logout }) => {
   const classes = useStyles();
+
+  const [redirect, setRedirect] = useState(false);
+
+  const logout_user = () => {
+    logout();
+    setRedirect(true);
+  };
 
   return (
     <div className={classes.root}>
@@ -48,7 +56,7 @@ const ButtonAppBar = ({ isAuthenticated, logout }) => {
               <b>Travel</b>
             </Link>
             {isAuthenticated ? (
-              <Button color="inherit" onClick={logout}>
+              <Button color="inherit" onClick={logout_user}>
                 Logout
               </Button>
             ) : (
@@ -59,6 +67,7 @@ const ButtonAppBar = ({ isAuthenticated, logout }) => {
           </Grid>
         </Toolbar>
       </AppBar>
+      {redirect ? <Redirect to="/" /> : <div></div>}
     </div>
   );
 };

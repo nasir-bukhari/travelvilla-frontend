@@ -11,8 +11,9 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import {login} from "../actions/auth";
-import {Redirect} from "react-router-dom"
+import { login } from "../actions/auth";
+import { Redirect } from "react-router-dom";
+import axios from "axios";
 
 function Copyright() {
   return (
@@ -58,9 +59,12 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  google: {
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
-const Login = ({ login, isAuthenticated}) => {
+const Login = ({ login, isAuthenticated }) => {
   const classes = useStyles();
 
   const [formData, setFormData] = useState({
@@ -79,8 +83,17 @@ const Login = ({ login, isAuthenticated}) => {
     login(email, password);
   };
 
-  if (isAuthenticated)
-  return <Redirect to='/' />;
+  const continueWithGoogle = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/auth/o/google-oauth2/?redirect_uri=http://localhost:8000`
+      );
+
+      window.location.replace(res.data.authorization_url);
+    } catch (error) {}
+  };
+
+  if (isAuthenticated) return <Redirect to="/" />;
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -94,7 +107,11 @@ const Login = ({ login, isAuthenticated}) => {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate onSubmit={e => onSubmit(e)}>
+          <form
+            className={classes.form}
+            noValidate
+            onSubmit={(e) => onSubmit(e)}
+          >
             <TextField
               variant="outlined"
               margin="normal"
@@ -103,9 +120,10 @@ const Login = ({ login, isAuthenticated}) => {
               id="email"
               label="Email Address"
               name="email"
+              value={email}
               autoComplete="email"
               autoFocus
-              onChange={e => onChange(e)}
+              onChange={(e) => onChange(e)}
             />
             <TextField
               variant="outlined"
@@ -113,11 +131,12 @@ const Login = ({ login, isAuthenticated}) => {
               required
               fullWidth
               name="password"
+              value={password}
               label="Password"
               type="password"
               id="password"
               autoComplete="current-password"
-              onChange={e => onChange(e)}
+              onChange={(e) => onChange(e)}
             />
             <Button
               type="submit"
@@ -144,15 +163,22 @@ const Login = ({ login, isAuthenticated}) => {
               <Copyright />
             </Box>
           </form>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.google}
+            onClick={continueWithGoogle}
+          >
+            Continue With Google
+          </Button>
         </div>
       </Grid>
     </Grid>
   );
 };
 
-const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
 });
 
-
-export default connect(mapStateToProps , {login})(Login);
+export default connect(mapStateToProps, { login })(Login);
