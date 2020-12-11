@@ -9,12 +9,12 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 import { connect } from "react-redux";
 import { login } from "../actions/auth";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
-
+import image from '../assets/images/login/login.jpg';
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -33,14 +33,15 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
   },
   image: {
-    backgroundImage: "url(https://source.unsplash.com/random)",
+    // backgroundImage: "url(https://source.unsplash.com/pakistan)",
+    background: `url(${image}) `,
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"
         ? theme.palette.grey[50]
         : theme.palette.grey[900],
     backgroundSize: "cover",
-    backgroundPosition: "center",
+    backgroundPosition: "top",
   },
   paper: {
     margin: theme.spacing(8, 4),
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -96,13 +97,13 @@ const Login = ({ login, isAuthenticated }) => {
   if (isAuthenticated) return <Redirect to="/" />;
 
   return (
-    <Grid container component="main" className={classes.root}>
+    <Grid container component="main" className={classes.root} >
       <CssBaseline />
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
+          <Avatar className={classes.avatar} >
+            <LockOutlinedIcon  />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in

@@ -19,14 +19,19 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 4,
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: '70px',
+    cursor: 'pointer'
   },
   links: {
     marginRight: 15,
     textDecoration: "none",
+    color: 'white'
   },
 }));
 
-const ButtonAppBar = ({ isAuthenticated, logout }) => {
+const ButtonAppBar = ({ isAuthenticated, logout , color, backgroundColor}) => {
   const classes = useStyles();
 
   const [redirect, setRedirect] = useState(false);
@@ -38,9 +43,9 @@ const ButtonAppBar = ({ isAuthenticated, logout }) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="transparent">
+      <AppBar position="static" color={color} style={{backgroundColor: backgroundColor}}>
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
+          <Typography variant="h5" className={classes.title} component={Link} href="/">
             Travelvilla
           </Typography>
           <Grid
@@ -49,18 +54,18 @@ const ButtonAppBar = ({ isAuthenticated, logout }) => {
             justify="flex-end"
             alignItems="baseline"
           >
-            <Link href="#" color="primary" className={classes.links}>
-              <b>Trips</b>
+            <Link href="/about" color="primary" className={classes.links}>
+              <b>About</b>
             </Link>
-            <Link href="#" color="primary" className={classes.links}>
-              <b>Travel</b>
+            <Link href="/contact" color="primary" className={classes.links}>
+              <b>Contact</b>
             </Link>
             {isAuthenticated ? (
               <Button color="inherit" onClick={logout_user}>
                 Logout
               </Button>
             ) : (
-              <Button color="inherit" href="/login">
+              <Button color="inherit" href="/login" >
                 Login
               </Button>
             )}
