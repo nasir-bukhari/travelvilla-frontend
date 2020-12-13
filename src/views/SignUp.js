@@ -16,9 +16,11 @@ import { signup } from "../actions/auth";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
-
+import ButtonAppBar from '../components/AppBar/AppBar';
+import Layout from "../hoc/Layout";
 function Copyright() {
   return (
+    
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
       <Link color="inherit" href="https://material-ui.com/">
@@ -96,6 +98,8 @@ const SignUp = ({ signup, isAuthenticated }) => {
   if (accountCreated) return <Redirect to="login" />;
 
   return (
+    <Layout>
+    <ButtonAppBar color="primary" backgroundColor="rgba(39, 99, 42, 1)"></ButtonAppBar>
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
@@ -208,7 +212,8 @@ const SignUp = ({ signup, isAuthenticated }) => {
         <Copyright />
       </Box>
     </Container>
-  );
+    </Layout>
+    );
 };
 
 const mapStateToProps = (state) => ({

@@ -2,10 +2,11 @@ import React from "react";
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 const mapStyles = {
     marginTop: '50px',
-    width: '550px',
-    padding:'0px',
+    width: '500px',
+    padding:'30px',
     height: '330px',
-  };
+};
+  
   export class MapContainer extends React.Component {
     constructor(props) {
       super(props);
@@ -32,15 +33,16 @@ const mapStyles = {
   
     render() {
       return (
-          
+        
           <Map
             google={this.props.google}
-            zoom={8}
+            zoom={1}
             style={mapStyles}
             initialCenter={{ lat: 47.444, lng: -122.176}}
           >
             {this.displayMarkers()}
           </Map>
+        
       );
     }
   }

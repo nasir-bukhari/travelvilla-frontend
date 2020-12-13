@@ -15,6 +15,8 @@ import { login } from "../actions/auth";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
 import image from '../assets/images/login/login.jpg';
+import ButtonAppBar from '../components/AppBar/AppBar';
+import Layout from "../hoc/Layout";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -97,6 +99,8 @@ const Login = ({ login, isAuthenticated }) => {
   if (isAuthenticated) return <Redirect to="/" />;
 
   return (
+    <Layout>
+    <ButtonAppBar color="primary" backgroundColor="rgba(39, 99, 42, 1)"></ButtonAppBar>
     <Grid container component="main" className={classes.root} >
       <CssBaseline />
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
@@ -175,7 +179,8 @@ const Login = ({ login, isAuthenticated }) => {
         </div>
       </Grid>
     </Grid>
-  );
+    </Layout>
+   );
 };
 
 const mapStateToProps = (state) => ({

@@ -1,7 +1,7 @@
 import React from "react";
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-
+import Footer from '../components/Footer/Footer';
 import ButtonAppBar from '../components/AppBar/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
 import Layout from "../hoc/Layout";
@@ -14,11 +14,12 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(3),
         textAlign: 'left',
         color: theme.palette.text.secondary,
-        height: '440px',
+        height: 'auto',
+        marginBottom: '20px'
       },
       fields: {
           margin: '10px 0px',
-          width: '500px'
+          width: '80%'
       }
 }));
 export default function Contact(){
@@ -96,6 +97,7 @@ export default function Contact(){
         </Grid>
       </Grid>
     </Container> 
+      <Footer></Footer>
     </Layout> 
  );   
 }

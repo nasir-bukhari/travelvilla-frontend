@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   title: {
+    fontSize: '20px',
     flexGrow: 4,
     color: 'white',
     fontWeight: 'bold',
@@ -45,8 +46,8 @@ const ButtonAppBar = ({ isAuthenticated, logout , color, backgroundColor}) => {
     <div className={classes.root}>
       <AppBar position="static" color={color} style={{backgroundColor: backgroundColor}}>
         <Toolbar>
-          <Typography variant="h5" className={classes.title} component={Link} href="/">
-            Travelvilla
+          <Typography variant="h4" className={classes.title} component={Button} href="/">
+            TravelVilla
           </Typography>
           <Grid
             container

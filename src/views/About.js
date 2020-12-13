@@ -2,18 +2,17 @@ import React from "react";
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import ButtonAppBar from '../components/AppBar/AppBar';
+import Footer from '../components/Footer/Footer';
 import { makeStyles } from '@material-ui/core/styles';
 import Layout from "../hoc/Layout";
 import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 const useStyles = makeStyles((theme) => ({
     paper: {
         padding: theme.spacing(3),
         textAlign: 'left',
         color: theme.palette.text.secondary,
-        height: '440px',
+        height: 'auto',
+        marginBottom: '20px'
       },
       fields: {
           margin: '10px 0px',
@@ -49,6 +48,7 @@ export default function About(){
               
           </Paper>
     </Container> 
+      <Footer></Footer>
     </Layout> 
  );   
 }

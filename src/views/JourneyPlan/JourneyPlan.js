@@ -44,13 +44,13 @@ export default function JourneyPlan() {
   return (
     <Layout>
       <ButtonAppBar color="primary" backgroundColor="rgba(39, 99, 42, 1)"></ButtonAppBar>
-      <Container fixed>
+      <Container >
       <Typography variant="h3" component="h2" style={{marginTop: '20px'}}>
         Journey Results
       </Typography>
       <Box component="span" m={1}>
       <Grid container spacing={3}>
-        <Grid item xs={6}>
+        <Grid item md={6} xs={12}>
           <Paper className={classes.paper}>
           <Typography variant="h6" component="span" >
             From: 
@@ -74,12 +74,12 @@ export default function JourneyPlan() {
           </Typography>
           <br></br>
           <br></br>
-          <Button variant="contained" color="secondary">
+          <Button variant="contained" color="secondary" href='/'>
               Edit Journey
           </Button>
           </Paper>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item md={6} xs={12}>
           <Paper className={classes.paper}>
           <Typography variant="h6" component="div" >
             Travel Preferences and Accessiblity
@@ -112,7 +112,7 @@ export default function JourneyPlan() {
           <Typography className={classes.heading}>Route 1</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <Container maxWidth="lg" style={{backgroundColor: 'lightgrey', padding: '20px'}}>
+        <Container maxWidth="lg" style={{backgroundColor: 'lightgrey', padding: '10px'}}>
           <Grid container spacing={1}>
             <Grid item xs={12} sm={6}>
               <Paper className={classes.paper}>
@@ -182,10 +182,10 @@ export default function JourneyPlan() {
               <Button variant="contained" color="primary">
                 View Map
               </Button>
-              <Box component="div" >
-              <MapContainer></MapContainer>
+              {/* <Box component="div"> */}
+                  <MapContainer ></MapContainer>
 
-              </Box>
+              {/* </Box> */}
               </Paper>
             </Grid>
             
