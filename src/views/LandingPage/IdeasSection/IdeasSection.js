@@ -25,6 +25,7 @@ export default function IdeasSection(){
                     <Card className={classes.root}>
                         <CardActionArea>
                             <CardMedia
+                            
                             component="img"
                             alt="Ideas for your next trip"
                             height="610"
@@ -54,7 +55,7 @@ export default function IdeasSection(){
                             />
                             <CardContent>
                             <Typography gutterBottom variant="h5" component="h2">
-                                Free Cancelation on most hotels
+                                Capture moments together
                             </Typography>
                             <Typography variant="body2" color="textSecondary" component="p">
                                 Because flexibiliy matters.

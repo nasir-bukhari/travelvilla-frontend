@@ -46,21 +46,77 @@ const useStyles = makeStyles({
     }
 });
 
-export default function Header(){
+const Header = () =>{
     const classes = useStyles();
     const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
 
     const handleDateChange = (date) => {
       setSelectedDate(date);
     };
+    let [fromLatitude, setfromLatitude] = React.useState(null);
+    let [fromLongitude, setfromLongitude] = React.useState(null);
+    let [toLatitude, settoLatitude] = React.useState(null);
+    let [toLongitude, settoLongitude] = React.useState(null);
+    
+    let [fromAddress, setFromAddress] = React.useState('');
+    let [toAddress, setToAddress] = React.useState('');
+    // searches for new locations
+    const updateCoordinates = (e) => {
+        e.preventDefault()
+
+        const encodedFromAddress = encodeURI(fromAddress);
+        const encodedToAddress = encodeURI(toAddress);
+        // fetches data from our api
+        fetch(`https://google-maps-geocoding.p.rapidapi.com/geocode/json?language=en&address=${encodedFromAddress}`, {
+            "method": "GET",
+            "headers": {
+            "x-rapidapi-host": "google-maps-geocoding.p.rapidapi.com",
+            "x-rapidapi-key": "53a15eb743msh3cdbb02c5482110p1cf9d2jsn3127424c9011"
+            }
+        })
+        .then(response => response.json())
+        .then(response => {
+            console.log(response.results);
+            setfromLatitude(response.results[0].geometry.location.lat);
+            setfromLongitude(response.results[0].geometry.location.lng);
+        })
+        .catch(err => console.log(err));
+        fetch(`https://google-maps-geocoding.p.rapidapi.com/geocode/json?language=en&address=${encodedToAddress}`, {
+            "method": "GET",
+            "headers": {
+            "x-rapidapi-host": "google-maps-geocoding.p.rapidapi.com",
+            "x-rapidapi-key": "53a15eb743msh3cdbb02c5482110p1cf9d2jsn3127424c9011"
+            }
+        })
+        .then(response => response.json())
+        .then(response => {
+            console.log(response.results);
+            settoLatitude(response.results[0].geometry.location.lat);
+            settoLongitude(response.results[0].geometry.location.lng);
+
+            // alert("From Latitude:"+ fromLatitude + " | From Longitude: " + fromLongitude + "\n"
+            // + "To Latitude:"+ toLatitude + " | To Longitude: " + toLongitude );
+        })
+        .catch(err => console.log(err));
+
+      
+    }
+
     return(
         <Box component="div" className={classes.root}>
            <ButtonAppBar color="primary" backgroundColor="rgba(39, 99, 42, 0.3)"></ButtonAppBar>
            <Container maxWidth="lg" >
                 <Box component="div" className={classes.box}>
-                <form noValidate autoComplete="off" className={classes.form} >
-                    <TextField id="outlined-basic" label="From" variant="outlined"  className={classes.formFields}/>
-                    <TextField id="outlined-basic" label="To" variant="outlined" className={classes.formFields}/>
+                <form onSubmit={(e) => updateCoordinates(e)} noValidate autoComplete="off" className={classes.form} >
+                    <TextField 
+                    value={fromAddress}
+                    onChange={(e) => setFromAddress(e.target.value)}
+                    id="outlined-basic" label="From" variant="outlined"  className={classes.formFields}/>
+                    <TextField 
+                    value={toAddress}
+                    onChange={(e) => setToAddress(e.target.value)}
+                    
+                    id="outlined-basic" label="To" variant="outlined" className={classes.formFields}/>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <Grid container justify="space-around">
                             <KeyboardDatePicker
@@ -89,7 +145,7 @@ export default function Header(){
                                 step: 300, // 5 min
                                 }}
                             />
-                        <Button href="/plan-my-journey" variant="contained" color="primary" className={classes.formBtn}>
+                        <Button type="submit" variant="contained" color="primary" className={classes.formBtn}>
                           Plan my Journey
                         </Button>     
                         </Grid>
@@ -103,3 +159,5 @@ export default function Header(){
         
     );
 }
+
+export default Header;

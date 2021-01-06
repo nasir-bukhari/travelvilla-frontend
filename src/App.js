@@ -9,6 +9,8 @@ import Activate from "./views/Activate";
 import JourneyPlan from "./views/JourneyPlan/JourneyPlan";
 import Contact from './views/Contact';
 import About from './views/About';
+import GEOApi from './geoapi';
+
 import { Provider } from "react-redux";
 import store from "./store";
 
@@ -24,6 +26,7 @@ const App = () => (
         <Route exact path="/about" component={About} />
         <Route exact path="/signup" component={SignUp} />
         <Route exact path="/login" component={Login} />
+        <Route exact path="/geoapi" component={GEOApi} />
         <Route exact path="/reset-password" component={ResetPassword} />
         
         <Route
