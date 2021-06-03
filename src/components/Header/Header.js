@@ -1,19 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import ButtonAppBar from '../../components/AppBar/AppBar';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
+import {MenuItem} from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import DateFnsUtils from '@date-io/date-fns';
 import Button from '@material-ui/core/Button';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+import {useSelector,useDispatch} from 'react-redux';
+import {addTrip,removeRoute,removeTrip} from '../../actions/map';
 
 import image from '../../assets/images/LandingPage/headerImg.jpg';
-// import { Link } from "react-router-dom";
+import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
+
+
+
+
 const useStyles = makeStyles({
     root: {
       background: `url(${image}) `,
@@ -46,84 +55,183 @@ const useStyles = makeStyles({
     }
 });
 
+
+
+
 const Header = () =>{
+
     const classes = useStyles();
-    const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+    const history = useHistory();
+
+    const state  = useSelector(state=>state.map)
+    //using the dispatch
+
+    const dispatch = useDispatch();
+   
+
+    useEffect(()=>{
+        dispatch(removeTrip());
+        dispatch(removeRoute())
+    },[])
+
+
+    const cities = ['bahawalpur','faisalabad','gujranwala','lahore','multan','rawalpindi','Sialkot']
+
+    const [selectedDate, setSelectedDate] = React.useState(new Date());
+    const [selectedTime, setSelectedTime] =React.useState('');
 
     const handleDateChange = (date) => {
+
       setSelectedDate(date);
+
     };
-    let [fromLatitude, setfromLatitude] = React.useState(null);
-    let [fromLongitude, setfromLongitude] = React.useState(null);
-    let [toLatitude, settoLatitude] = React.useState(null);
-    let [toLongitude, settoLongitude] = React.useState(null);
+
+    const handleTimeChange = (event) => {
+
+        setSelectedTime(event.target.value);
+  
+      };
     
+    let [city, setCity] = React.useState('');
+    let [stops, setStops] = React.useState([]);
     let [fromAddress, setFromAddress] = React.useState('');
     let [toAddress, setToAddress] = React.useState('');
-    // searches for new locations
-    const updateCoordinates = (e) => {
-        e.preventDefault()
 
-        const encodedFromAddress = encodeURI(fromAddress);
-        const encodedToAddress = encodeURI(toAddress);
-        // fetches data from our api
-        fetch(`https://google-maps-geocoding.p.rapidapi.com/geocode/json?language=en&address=${encodedFromAddress}`, {
-            "method": "GET",
-            "headers": {
-            "x-rapidapi-host": "google-maps-geocoding.p.rapidapi.com",
-            "x-rapidapi-key": "53a15eb743msh3cdbb02c5482110p1cf9d2jsn3127424c9011"
-            }
-        })
+    //Update city
+
+    const handleCityChange = (event) => {
+
+        let city = event.target.value;
+        setCity(city);
+
+        //pass city to the dynamic address
+        handleStops(city)
+       
+    };
+
+   const handleStops= city=>{
+
+        //fetch for city stops from assets
+        fetch(`../../stops/${city}.json`)
         .then(response => response.json())
-        .then(response => {
-            console.log(response.results);
-            setfromLatitude(response.results[0].geometry.location.lat);
-            setfromLongitude(response.results[0].geometry.location.lng);
+        .then(data =>{
+            
+            const stops = data.features
+            setStops(stops)
+           
         })
-        .catch(err => console.log(err));
-        fetch(`https://google-maps-geocoding.p.rapidapi.com/geocode/json?language=en&address=${encodedToAddress}`, {
-            "method": "GET",
-            "headers": {
-            "x-rapidapi-host": "google-maps-geocoding.p.rapidapi.com",
-            "x-rapidapi-key": "53a15eb743msh3cdbb02c5482110p1cf9d2jsn3127424c9011"
-            }
-        })
-        .then(response => response.json())
-        .then(response => {
-            console.log(response.results);
-            settoLatitude(response.results[0].geometry.location.lat);
-            settoLongitude(response.results[0].geometry.location.lng);
-
-            // alert("From Latitude:"+ fromLatitude + " | From Longitude: " + fromLongitude + "\n"
-            // + "To Latitude:"+ toLatitude + " | To Longitude: " + toLongitude );
-        })
-        .catch(err => console.log(err));
-
-      
+        
     }
+
+     
+    const handleSubmit=event=>{
+
+        event.preventDefault()
+
+        // Grab the user selections and update global state and send to API
+        const fromName = fromAddress.properties.name;
+        const fromLongitude  = fromAddress.geometry.coordinates[0];
+        const fromLatitude  = fromAddress.geometry.coordinates[1];
+        const fromID = fromAddress.properties.id;
+        const toName = toAddress.properties.name;
+        const toLongitude  = toAddress.geometry.coordinates[0];
+        const toLatitude  = toAddress.geometry.coordinates[1];
+        const toID = toAddress.properties.id;
+        const date = selectedDate;
+        const time = selectedTime;
+        const selectedCity = city;
+
+        const payload = {
+
+            'fromName':fromName,
+            'fromLongitude':fromLongitude,
+            'fromLatitude':fromLatitude,
+            'fromID':fromID,
+            'toName':toName,
+            'toLongitude':toLongitude,
+            'toLatitude':toLatitude,
+            'toID':toID,
+            'date':date,
+            'time':time,
+            'selectedCity':selectedCity
+        };
+
+        
+        //add the user selection to state
+
+         dispatch(addTrip(payload));
+
+         setTimeout(()=>{
+            history.push('/plan-my-journey');
+         },1000)
+       
+    }
+   
 
     return(
         <Box component="div" className={classes.root}>
            <ButtonAppBar color="primary" backgroundColor="rgba(39, 99, 42, 0.3)"></ButtonAppBar>
            <Container maxWidth="lg" >
                 <Box component="div" className={classes.box}>
-                <form onSubmit={(e) => updateCoordinates(e)} noValidate autoComplete="off" className={classes.form} >
-                    <TextField 
-                    value={fromAddress}
-                    onChange={(e) => setFromAddress(e.target.value)}
-                    id="outlined-basic" label="From" variant="outlined"  className={classes.formFields}/>
-                    <TextField 
-                    value={toAddress}
-                    onChange={(e) => setToAddress(e.target.value)}
+                {/* onSubmit={(e) => updateCoordinates(e)} */}
+                <form  noValidate autoComplete="off" className={classes.form} >
+
+                    {/* City selection */}
                     
-                    id="outlined-basic" label="To" variant="outlined" className={classes.formFields}/>
+
+                    <TextField
+                    select
+                    id="outlined-basic"
+                    value={city}
+                    label='City'
+                    variant="outlined" 
+                    onChange={handleCityChange}
+                    className={classes.formFields}
+                    
+                    >{
+                        cities.map((city,id)=>{
+
+                           return <MenuItem value={city} key={id}>{city.toUpperCase()}</MenuItem>
+                        })
+                    }
+                   
+                    </TextField>
+
+
+                    {/* From Stops Selection */}
+
+                    <Autocomplete
+                        id="outlined-basic"
+                        options={stops}
+                        getOptionLabel={option => option.properties.name.toUpperCase()}
+                        onChange={(event, value) => setFromAddress(value)}
+                        className={classes.formFields}
+                        renderInput={params => <TextField {...params} label="From" variant="outlined" />}
+                        
+                    />
+                       
+
+                    {/* To Stops Selection */}
+
+                    <Autocomplete
+                        id="outlined-basic"
+                        options={stops}
+                        getOptionLabel={option => option.properties.name.toUpperCase()}
+                        onChange={(event, value) => setToAddress(value)}
+                        className={classes.formFields}
+                        renderInput={params => <TextField {...params} label="To" variant="outlined" />}
+                        
+                    />
+
+
+                      {/* Date & Time Picker */}
+
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <Grid container justify="space-around">
                             <KeyboardDatePicker
                             disableToolbar
                             variant="inline"
-                            format="MM/dd/yyyy"
-                           
+                            format="MM/dd/yyyy"      
                             id="date-picker-inline"
                             label="Select Date"
                             value={selectedDate}
@@ -132,11 +240,11 @@ const Header = () =>{
                                 'aria-label': 'change date',
                             }}
                             />
+
                            <TextField
                                 id="time"
                                 label="Select Time"
                                 type="time"
-                                defaultValue="07:30"
                                 className={classes.textField}
                                 InputLabelProps={{
                                 shrink: true,
@@ -144,10 +252,22 @@ const Header = () =>{
                                 inputProps={{
                                 step: 300, // 5 min
                                 }}
+                                value={selectedTime}
+                                onChange={handleTimeChange}
+                            
+                                
                             />
-                        <Button type="submit" variant="contained" color="primary" className={classes.formBtn}>
-                          Plan my Journey
-                        </Button>     
+
+                      
+                            <Button type="submit" variant="contained" color="primary" className={classes.formBtn} onClick={handleSubmit}
+                            disabled={
+                                
+                                selectedDate !== '' && selectedTime !== '' &&
+                                fromAddress !== '' && toAddress !== '' ? false : true
+                            }
+                            >
+                            Plan my Journey
+                            </Button>
                         </Grid>
                         
                     </MuiPickersUtilsProvider>

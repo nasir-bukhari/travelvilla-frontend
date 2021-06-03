@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 import ButtonAppBar from '../../components/AppBar/AppBar';
 import Footer from "../../components/Footer/Footer";
 import Layout from "../../hoc/Layout";
@@ -12,10 +12,12 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DirectionsWalkIcon from '@material-ui/icons/DirectionsWalk';
 import { makeStyles } from '@material-ui/core/styles';
 import TrainIcon from '@material-ui/icons/Train';
 import MapContainer from '../../components/MapContainer/MapContainer';
+import { useSelector} from 'react-redux';
+
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     textAlign: 'left',
@@ -38,10 +40,110 @@ const useStyles = makeStyles((theme) => ({
     width: '80%'
   }
 }));
-export default function JourneyPlan() {
-  const classes = useStyles();
 
-  return (
+
+
+
+
+
+
+export default function JourneyPlan() {
+
+
+  const state = useSelector(state=>state.map);
+  const classes = useStyles();
+  const [hour,setHour] = useState('');
+  const [time,setTime] = useState('');
+  const [date,setDate] = useState('');
+  const [fromName,setFromName] = useState('');
+  const [toName,setToName] = useState('');
+  const [routes,setRoutes] = useState(null);
+  const [startingTime,setStartingTime] = useState('');
+  const [endingTime,setEndingTime] = useState('');
+  const [origin,setOrigin] = useState('');
+  const [distance,setDistance] = useState(0);
+  const [travelTime,setTravelTime] = useState(0);
+  const [arrivalTime,setArrivalTime] = useState(0);
+
+  let totalTime = 0;
+
+
+  // console.log(state)
+  useEffect(()=>{
+
+    const {route,trip} = state;
+
+    const {fromName,toName,time,date} = trip;
+
+      setFromName(fromName);
+      setToName(toName);
+      setTime(time);
+
+      const hour = time.split(':')[0] > 12 ? 'pm' : 'am';
+      setHour(hour);
+
+      const DATE = String(date).split('T')[0];
+      setDate(DATE);
+
+
+      if(route.features.length > 1){
+
+        setRoutes(route);
+
+        route.features.map((route)=>{
+
+          const {travl_time} = route.properties;
+
+          totalTime = totalTime + Number(travl_time);
+
+        if(totalTime < 60){
+
+          const minuteSum = Number(time.split(':')[1]) + Math.round(totalTime)
+
+          totalTime = time.split(':')[0] + ':' + minuteSum;
+
+          setArrivalTime(totalTime);
+
+        }
+
+
+      })
+
+  }else if(route.features.length == 1){
+
+    const {ending_t,starting_t,travl_time,distance,origin} = route.features[0].properties;
+
+    totalTime = travl_time;
+
+    setOrigin(origin);
+    setStartingTime(starting_t);
+    setEndingTime(ending_t);
+    setDistance(Math.round(distance * 1000)/1000);
+    setTravelTime(Math.round(Number(travl_time)));
+
+
+    if(totalTime < 60){
+
+      const minuteSum = Number(time.split(':')[1]) + Math.round(totalTime)
+
+      totalTime = time.split(':')[0] + ':' + minuteSum;
+
+      setArrivalTime(totalTime);
+
+
+    }
+
+
+   }
+
+},[state,routes]);
+
+
+
+
+
+
+return (
     <Layout>
       <ButtonAppBar color="primary" backgroundColor="rgba(39, 99, 42, 1)"></ButtonAppBar>
       <Container >
@@ -53,24 +155,24 @@ export default function JourneyPlan() {
         <Grid item md={6} xs={12}>
           <Paper className={classes.paper}>
           <Typography variant="h6" component="span" >
-            From: 
-          </Typography> 
+            From:
+          </Typography>
           <Typography variant="subtitle1" component="span" className={classes.spacingLeft}>
-             Lahore
+            {fromName}
           </Typography>
           <br></br>
           <Typography variant="h6" component="span" >
-            To: 
+            To:
           </Typography>
           <Typography variant="subtitle1" component="span" className={classes.spacingLeft}>
-             Islamabad
+          {toName}
           </Typography>
           <br></br>
           <Typography variant="h6" component="span" >
-            Leaving Date/Time: 
+            Leaving Date/Time:
           </Typography>
           <Typography variant="subtitle1" component="span" className={classes.spacingLeft}>
-             23 March 2020 / 3:12 pm
+            {date} / {time } {hour}
           </Typography>
           <br></br>
           <br></br>
@@ -88,21 +190,21 @@ export default function JourneyPlan() {
             Showing the fastest routes Using all transport modes Max walk time 60 mins
           </Typography>
           <br></br>
-          
+
           <Button variant="contained" color="secondary" className={classes.spacingTop}>
               Edit Preferences
-          </Button> 
+          </Button>
           </Paper>
         </Grid>
-        
+
       </Grid>
       </Box>
       <br></br>
       <br></br>
-      <Typography variant="h6" component="span" >
-            THE FOLLOWING JOURNEYS DEPART ON WED 9 DEC By Public Transport
+      {/* <Typography variant="h6" component="span" >
+            THE FOLLOWING JOURNEYS DEPART ON {state.trip.date} By Public Transport
       </Typography>
-      
+       */}
       <Accordion className={classes.spacingTop} >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -118,47 +220,79 @@ export default function JourneyPlan() {
               <Paper className={classes.paper}>
                 <Box component="div">
                 <Typography className={classes.heading} variant='h6' component="span">Leave At: </Typography>
-                <Typography className={classes.heading}  component="span">2:41pm</Typography> 
+                <Typography className={classes.heading}  component="span">{time} {hour}</Typography>
                 <br></br>
                 <Typography className={classes.heading}  variant='h6' component="span">Arrive At: </Typography>
-                <Typography className={classes.heading}  component="span">10:23 am </Typography>
+                <Typography className={classes.heading}  component="span">{arrivalTime} {hour} </Typography>
                 </Box>
                 <br></br>
-                <Box component="div" >
-                <DirectionsWalkIcon ></DirectionsWalkIcon>
-                <span className={classes.directionDiv}>
-                  
-                  <Typography className={classes.heading} variant='h6' component="span">
-                    Board Ride-On Bus 61 - 15 mins
-                    <br></br>
-                    Departs from ODEND HAL AVE & LOST KNIFE RD
-                  </Typography>
-                  
-                </span>
-                  <hr></hr>
 
-                </Box>
               </Paper>
               <br></br>
-              <Paper className={classes.paper}>
-               
-                <Box component="div" >
-                <TrainIcon></TrainIcon>
-                <span className={classes.directionDiv}>
-                  
-                  <Typography className={classes.heading} variant='h6' component="span">
-                    Board Ride-On Bus 61 - 15 min
-                    <br></br>
-                    Departs from ODEND HAL AVE & LOST KNIFE RD
-                  </Typography>
-                  
-                </span>
-                  <hr></hr>
 
-                </Box>
-              </Paper>
+              {routes ? routes.features.map((route,id)=>{
+
+                    const {ending_t,starting_t,travl_time,distance,origin,} = route.properties;
+
+                    return(
+
+                      <Paper className={classes.paper} key={id}>
+
+                      <Box component="div" >
+                      <TrainIcon></TrainIcon>
+                      <span className={classes.directionDiv}>
+
+                        <Typography className={classes.heading} variant='h6' component="span">
+                          Board Ride-On Bus {Math.round(Number(travl_time))} minutes
+                          <br></br>
+                          Departs from: {origin} <br></br>
+                          Open: {starting_t} <br></br>
+                          Close: {ending_t}<br></br>
+                          Distance: {Math.round(distance * 1000)/1000} M<br></br>
+
+                        </Typography>
+
+                      </span>
+                        <hr></hr>
+
+                      </Box>
+                    </Paper>
+                    )
+
+                   })
+
+                  :
+
+                      <Paper className={classes.paper}>
+
+                      <Box component="div" >
+                      <TrainIcon></TrainIcon>
+                      <span className={classes.directionDiv}>
+
+                        <Typography className={classes.heading} variant='h6' component="span">
+                          Board Ride-On Bus {travelTime} minutes
+                          <br></br>
+                          Departs from: {origin} <br></br>
+                          Open: {startingTime} <br></br>
+                          Close : {endingTime}<br></br>
+                          Distance: {distance} KM<br></br>
+
+                        </Typography>
+
+                      </span>
+                        <hr></hr>
+
+                      </Box>
+                    </Paper>
+
+
+                }
+
               <br></br>
-              <Paper className={classes.paper}>
+
+
+
+              {/* <Paper className={classes.paper}>
                
                 <Box component="div" >
                 <DirectionsWalkIcon></DirectionsWalkIcon>
@@ -175,7 +309,7 @@ export default function JourneyPlan() {
                   <hr></hr>
 
                 </Box>
-              </Paper>
+              </Paper> */}
             </Grid>
             <Grid item xs={12} sm={6}>
               <Paper className={classes.paper}>
